@@ -10,6 +10,7 @@ def main():
 
     GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
     GENAI_MODEL = os.getenv("GEMINI_MODEL")
+    MODEL_INSTRUCTION = os.getenv("GEMINI_INSTRUCTION")
 
     """
     Inicia uma interface de linha de comando para conversar com o modelo Gemini.
@@ -26,7 +27,14 @@ def main():
 
         model = genai.GenerativeModel(model_name=GENAI_MODEL)
 
-        chat = model.start_chat(history=[])
+        initial_instructions = f"""{MODEL_INSTRUCTION}"""
+
+        chat = model.start_chat(history=[
+            {
+                "role": "user",
+                "parts": [initial_instructions]
+            }
+        ])
 
         print("xxxxxxxxxxxxxxx")
         print("Gemini Chat CLI")
