@@ -31,8 +31,11 @@ Para garantir a segurança, a chave da API não é armazenada no código. Em vez
 Na raiz do seu projeto, crie um arquivo chamado .env e adicione sua chave de API nele no seguinte formato:
 Snippet de código
 
+```
 GEMINI_API_KEY='SUA_CHAVE_AQUI'
+
 GEMINI_MODEL'SEU MODELO AQUI'
+```
 
 Observação: Substitua os valores pelo valor real desejado.
 
