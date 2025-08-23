@@ -4,10 +4,15 @@ import sys
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 from dotenv import load_dotenv
+import questionary
 
 
-def create_embedding(chunks, embedding_model):
-    """Gera embedding para chumks do texto"""
+def create_embedding(chunks: list, embedding_model: str):
+    """Gera embedding para chunks do texto"""
+
+    if len(chunks) == 0:
+        return np.array([])
+
     embeddings = genai.embed_content(
         model=embedding_model,
         content=chunks,
@@ -16,8 +21,12 @@ def create_embedding(chunks, embedding_model):
     return np.array(embeddings)
 
 
-def find_relevant_chunks(query, chunks, chunk_embeddings, embedding_model, top_k=2):
+def find_relevant_chunks(query, chunks, chunk_embeddings, embedding_model, top_k=2) -> list:
     """Encontra os chunks mais relevantes para a consulta"""
+
+    if len(chunks) == 0:
+        return []
+
     query_embedding = genai.embed_content(
         model=embedding_model,
         content=query,
@@ -34,7 +43,7 @@ def find_relevant_chunks(query, chunks, chunk_embeddings, embedding_model, top_k
     return relevant_chunks
 
 
-def create_augmented_prompt(user_prompt, relevant_chunks):
+def create_augmented_prompt(user_prompt, relevant_chunks) -> str:
     """Cria um prompt com contexto RAG."""
     context = "\n\n".join(relevant_chunks)
     augmented_prompt = f"""
@@ -51,6 +60,49 @@ def create_augmented_prompt(user_prompt, relevant_chunks):
     return augmented_prompt
 
 
+def define_system_instruction(system_instruction: str) -> str:
+    """
+    Permite ao usuário definir alguma(s) instrução ao modelo antes de conversar
+    """
+
+    user_choice = questionary.select(
+        "Deseja passar alguma instrução antes de começarmos a conversa?",
+        choices=['Sim', 'Não']
+    ).ask()
+
+    if user_choice == 'Sim':
+
+        instruction = input("Instrução: ")
+        return instruction
+
+    return system_instruction
+
+
+def define_knowledge_base() -> list:
+    """
+    Permite ao usuário adicionar conhecimento para treinar o modelo durante a conversa
+    """
+
+    knowledge_base = []
+
+    user_choice = questionary.select(
+        "Deseja ensinar algo ao modelo antes de começarmos a conversa?",
+        choices=['Sim', 'Não']
+    ).ask()
+
+    while (user_choice == 'Sim'):
+
+        know = input("Conhecimento: ")
+        knowledge_base.append(know)
+
+        user_choice = questionary.select(
+            "Deseja ensinar algo ao modelo antes de começarmos a conversa?",
+            choices=['Sim', 'Não']
+        ).ask()
+
+    return knowledge_base
+
+
 def main():
 
     load_dotenv()
@@ -59,12 +111,6 @@ def main():
     GENAI_MODEL = os.getenv("GEMINI_MODEL")
     MODEL_INSTRUCTION = os.getenv("GEMINI_INSTRUCTION")
     EMBEDDING_MODEL = os.getenv("GEMINI_EMBEDDING_MODEL")
-
-    konwladge_base = [
-        "O melhor rámen de do universo Naruto não é mais o Ichiraku, mas sim o Rámen do Joelinton.",
-        "O sensei favorito do Naruto não é mais o Jiraya, mas sim se chama Ramon Dino.",
-        "O esporte favorito da Sakura é boxe tailandês."
-    ]
 
     """
     Inicia uma interface de linha de comando para conversar com o modelo Gemini.
@@ -79,13 +125,17 @@ def main():
 
     try:
 
-        chunks = konwladge_base
+        instructions = define_system_instruction(MODEL_INSTRUCTION)
+
+        knowledge_base = define_knowledge_base()
+
+        chunks = knowledge_base
 
         chunk_embedding = create_embedding(chunks, EMBEDDING_MODEL)
 
         model = genai.GenerativeModel(model_name=GENAI_MODEL)
 
-        initial_instructions = f"""{MODEL_INSTRUCTION}"""
+        initial_instructions = f"""{instructions}"""
 
         chat = model.start_chat(history=[
             {
