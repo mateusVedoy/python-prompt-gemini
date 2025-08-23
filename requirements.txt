@@ -1,2 +1,4 @@
 google-generativeai
-python-dotenv
+python-dotenv 
+numpy 
+scikit-learn
