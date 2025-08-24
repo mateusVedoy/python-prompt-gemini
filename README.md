@@ -90,30 +90,36 @@ python main.py
 
 $ python main.py
 
+? Deseja passar alguma instrução antes de começarmos a conversa? (Use as setas para navegar e Enter para confirmar)
+❯ Sim
+  Não
+
+Instrução: Você é um assistente de IA focado em responder sobre programação Python.
+
+? Deseja ensinar algo ao modelo antes de começarmos a conversa?
+❯ Sim
+  Não
+
+Conhecimento: O comando 'pip install' é usado para instalar pacotes Python.
+
+? Deseja ensinar algo ao modelo antes de começarmos a conversa?
+  Sim
+❯ Não
+
 xxxxxxxxxxxxxxx
 Gemini Chat CLI
 xxxxxxxxxxxxxxx
 
 Digite sua mensagem ou 'sair' para encerrar
 
-Você: Olá, como você se chama?
+Você: Qual o comando para instalar pacotes?
 
 Resposta:
-
-Eu sou um grande modelo de linguagem, treinado pelo Google.
-Você: Qual é a sua principal função?
+O comando para instalar pacotes Python é `pip install`.
 
 Digite sua mensagem ou 'sair' para encerrar
 
-Você: Sim, conte-me!
-
-Resposta:
-
-Minha principal função é ajudar com uma ampla variedade de tarefas
-
-Digite sua mensagem ou 'sair' para encerrar
-
-Você: sair
+Você: Sair
 
 Encerrando interação...
 
